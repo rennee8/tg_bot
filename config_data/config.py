@@ -6,6 +6,7 @@ if not find_dotenv():
 else:
     load_dotenv()
 
+ENABLE_TIMING = False
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 DEFAULT_COMMANDS = (
     ('start', 'Запустить бота'),
