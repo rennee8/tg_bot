@@ -8,6 +8,8 @@ else:
 
 ENABLE_TIMING = False
 BOT_TOKEN = os.getenv("BOT_TOKEN")
+USER_BD = os.getenv("USER_BD")
+PASSWORD_BD = os.getenv("PASSWORD_BD")
 DEFAULT_COMMANDS = (
     ('start', 'Запустить бота'),
     ('help', 'Вывести справку'),
