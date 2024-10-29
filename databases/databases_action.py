@@ -6,9 +6,8 @@ from telebot.types import Message
 from databases.tables import Groups, Update_Table_Date, Users, Schedule, Users_Last_Message
 from loader import lock
 from utils.converter import convert_schedule
-from utils.decorators import timeit
+from utils.decorators import timeit, timer_databases
 from utils.request_for_site import start_browser, get_group_list, get_schedule
-
 
 @timeit
 def check_groups_db(engine) -> None:
@@ -73,7 +72,7 @@ def get_all_values_group_form_db(engine) -> list:
         values_list = [value for value in values]
         return values_list
 
-
+@timer_databases
 @timeit
 def check_user_db(engine, user_id: int) -> bool:
     with sessionmaker(bind=engine)() as session:
@@ -96,7 +95,7 @@ def add_user_in_db(engine, message: Message):
             session.add(new_user)
         session.commit()
 
-
+@timer_databases
 @timeit
 def get_group_from_db(engine, user_id: int) -> str:
     with sessionmaker(bind=engine)() as session:
@@ -197,7 +196,7 @@ def add_user_last_message_in_db(engine, user_id: int, last_message_id: int = Non
             session.add(Users_Last_Message(id=user_id, message_id=last_message_id))
         session.commit()
 
-
+@timer_databases
 @timeit
 def check_user_last_message(engine, user_id: int) -> Any:
     with sessionmaker(bind=engine)() as session:
