@@ -4,10 +4,11 @@ from sqlalchemy import update
 from sqlalchemy.orm import sessionmaker
 from telebot.types import Message
 from databases.tables import Groups, Update_Table_Date, Users, Schedule, Users_Last_Message
-from loader import  lock
+from loader import lock
 from utils.converter import convert_schedule
 from utils.decorators import timeit
 from utils.request_for_site import start_browser, get_group_list, get_schedule
+
 
 @timeit
 def check_groups_db(engine) -> None:
@@ -20,7 +21,8 @@ def check_groups_db(engine) -> None:
                 for group, value_group in group_dict.items():
                     new_user = Groups(group=group, value_group=int(value_group))
                     session.add(new_user)
-                exists = session.query(Update_Table_Date).filter(Update_Table_Date.table_name == Groups.__tablename__).first() is not None
+                exists = session.query(Update_Table_Date).filter(
+                    Update_Table_Date.table_name == Groups.__tablename__).first() is not None
 
                 if exists:
                     stmt = update(Update_Table_Date).where(Update_Table_Date.table_name == Groups.__tablename__)
@@ -29,7 +31,8 @@ def check_groups_db(engine) -> None:
                     session.add(Update_Table_Date(table_name=Groups.__tablename__))
 
                 session.commit()
-            elif (datetime.now() - session.query(Update_Table_Date).filter(Update_Table_Date.table_name == 'groups').first().created_at).days >= 3:
+            elif (datetime.now() - session.query(Update_Table_Date).filter(
+                    Update_Table_Date.table_name == 'groups').first().created_at).days >= 3:
                 session.query(Groups).delete()
                 browser = start_browser()
                 group_dict = get_group_list(browser)
@@ -40,6 +43,7 @@ def check_groups_db(engine) -> None:
                 stmt = update(Update_Table_Date).where(Update_Table_Date.table_name == Groups.__tablename__)
                 session.execute(stmt)
                 session.commit()
+
 
 @timeit
 def get_group_list_from_db(engine, type_return: str) -> Any:
@@ -54,11 +58,13 @@ def get_group_list_from_db(engine, type_return: str) -> Any:
             list_groups = [group[0] for group in group_values]
             return list_groups
 
+
 @timeit
 def get_value_group_from_db(engine, group_user: str) -> str:
     with sessionmaker(bind=engine)() as session:
         group_record = session.get(Groups, group_user)
         return str(group_record.value_group)
+
 
 @timeit
 def get_all_values_group_form_db(engine) -> list:
@@ -66,6 +72,7 @@ def get_all_values_group_form_db(engine) -> list:
         values = session.query(Groups.group, Groups.value_group).all()
         values_list = [value for value in values]
         return values_list
+
 
 @timeit
 def check_user_db(engine, user_id: int) -> bool:
@@ -75,6 +82,7 @@ def check_user_db(engine, user_id: int) -> bool:
             return False
         else:
             return True
+
 
 @timeit
 def add_user_in_db(engine, message: Message):
@@ -88,11 +96,13 @@ def add_user_in_db(engine, message: Message):
             session.add(new_user)
         session.commit()
 
+
 @timeit
 def get_group_from_db(engine, user_id: int) -> str:
     with sessionmaker(bind=engine)() as session:
         group_record = session.get(Users, user_id)
         return str(group_record.group)
+
 
 @timeit
 def check_schedule_in_db(engine, user_id: int) -> None:
@@ -108,7 +118,8 @@ def check_schedule_in_db(engine, user_id: int) -> None:
 
 
 @timeit
-def add_schedule_in_db(engine, type_act: str, user_id: int=None, group: str=None , schedule_dict: dict=None) -> None:
+def add_schedule_in_db(engine, type_act: str, user_id: int = None, group: str = None,
+                       schedule_dict: dict = None) -> None:
     with sessionmaker(bind=engine)() as session:
         if group is None:
             group = session.get(Users, user_id).group
@@ -174,17 +185,19 @@ def get_schedule_from_db(engine, group: str, day: str) -> str:
                 return f'Группа {group}\n\n' + text
 
 
-
 @timeit
-def add_user_last_message_in_db(engine, user_id: int, last_message_id: int=None):
+def add_user_last_message_in_db(engine, user_id: int, last_message_id: int = None):
     with sessionmaker(bind=engine)() as session:
         user_lm_record = session.get(Users_Last_Message, user_id)
         if user_lm_record:
-            session.query(Users_Last_Message).filter(Users_Last_Message.id == user_id).update({"message_id": last_message_id})
+            session.query(Users_Last_Message).filter(Users_Last_Message.id == user_id).update(
+                {"message_id": last_message_id})
         else:
 
             session.add(Users_Last_Message(id=user_id, message_id=last_message_id))
         session.commit()
+
+
 @timeit
 def check_user_last_message(engine, user_id: int) -> Any:
     with sessionmaker(bind=engine)() as session:
@@ -193,4 +206,3 @@ def check_user_last_message(engine, user_id: int) -> Any:
             return user_lm_record.message_id
         else:
             return None
-

@@ -12,6 +12,7 @@ USER_BD = os.getenv("USER_BD")
 PASSWORD_DB = os.getenv("PASSWORD_DB")
 HOST_PORT = os.getenv("HOST_PORT")
 DB_NAME = os.getenv("DB_NAME")
+WEB_DRIVER_PATH = os.getenv("WEB_DRIVER_PATH")
 
 DEFAULT_COMMANDS = (
     ('start', 'Запустить бота'),

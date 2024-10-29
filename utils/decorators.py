@@ -13,4 +13,5 @@ def timeit(func):
             return result
         else:
             return func(*args, **kwargs)
+
     return wrapper

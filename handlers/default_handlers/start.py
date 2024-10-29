@@ -1,6 +1,6 @@
 from telebot.types import Message
-
-from databases.databases_action import check_user_db, get_group_list_from_db, check_groups_db, add_user_in_db, add_user_last_message_in_db
+from databases.databases_action import check_user_db, get_group_list_from_db, check_groups_db, add_user_in_db, \
+    add_user_last_message_in_db
 from handlers.default_handlers.which_week import which_week
 from handlers.default_handlers.groups import get_groups
 from handlers.default_handlers.help import bot_help
@@ -14,7 +14,6 @@ def bot_start(message: Message):
     check_groups_db(engine)
 
     user = check_user_db(engine, message.from_user.id)
-    # Если юзер уже писал и указывал группу то берем из базы его группу
     if not user:
         bot.send_message(message.from_user.id, f"Привет, введи свою группу.\nДля просмотра команд введи /help")
         bot.register_next_step_handler(message, input_group)
@@ -22,6 +21,7 @@ def bot_start(message: Message):
     else:
         keyboard = day_tittle()
         bot.send_message(message.chat.id, "Какой день недели ты хочешь выбрать?", reply_markup=keyboard)
+
 
 @bot.message_handler(commands=["set_group"])
 def bot_set_group(message: Message):
@@ -36,8 +36,7 @@ def bot_set_group(message: Message):
     pass
 
 
-
-def input_group(message: Message, update: bool=False):
+def input_group(message: Message, update: bool = False):
     if message.text == '/start':
         bot_start(message)
         return
@@ -54,8 +53,6 @@ def input_group(message: Message, update: bool=False):
         which_week(message)
         return
 
-
-    # Если группа есть в базе данных то кидаем выбор какую ненделю выбрать если нет, то пишем такой группы нет, возможно вы имели ввиду такую то такуюто
     if message.text.upper() in get_group_list_from_db(engine, 'list'):
         if update:
             add_user_in_db(engine, message)
@@ -66,7 +63,6 @@ def input_group(message: Message, update: bool=False):
         user = check_user_db(engine, message.from_user.id)
 
         if not user:
-
             add_user_in_db(engine, message)
         keyboard = day_tittle()
         bot.send_message(message.chat.id, "Какой день недели ты хочешь выбрать?", reply_markup=keyboard)

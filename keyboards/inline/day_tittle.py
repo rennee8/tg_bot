@@ -9,5 +9,4 @@ def day_tittle():
     keyboard.add(InlineKeyboardButton(text='Четверг', callback_data='3'), InlineKeyboardButton(text='Пятница', callback_data='4'), InlineKeyboardButton(text='Суббота', callback_data='5'))
     keyboard.add(InlineKeyboardButton(text='Вся неделя', callback_data='6'))
 
-
     return keyboard
